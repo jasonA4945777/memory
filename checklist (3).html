@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>今日站點</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F7F3;
+  --surface:#FFFFFF;
+  --ink:#20291F;
+  --ink-soft:#5C6A5C;
+  --muted:#9CA89A;
+  --line:#E3E7DF;
+  --accent:#2E6B4E;
+  --accent-soft:#E4EFE8;
+  --danger:#B4543E;
+  --radius:14px;
+  --serif:"Noto Serif TC","PingFang TC",serif;
+  --sans:-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+}
+body.night{
+  --bg:#161B28;
+  --surface:#1F2534;
+  --ink:#EAE5D6;
+  --ink-soft:#B4AE9C;
+  --muted:#6E7180;
+  --line:#2E3547;
+  --accent:#D9A441;
+  --accent-soft:#2C2A22;
+  --danger:#C97B5E;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{font-size:16px}
+body{
+  font-family:var(--sans);
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100vh;
+  overflow-x:hidden;
+  transition:background .7s ease,color .7s ease;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+@media (prefers-reduced-motion:reduce){
+  *,body{transition:none !important;animation:none !important}
+}
+.app{
+  max-width:560px;margin:0 auto;
+  padding:20px 18px 120px;
+  padding:calc(20px + env(safe-area-inset-top, 0px)) 18px 120px;
+}
+
+/* ---------- header ---------- */
+header{display:flex;align-items:center;justify-content:space-between;gap:8px 10px;flex-wrap:wrap;margin-bottom:18px}
+.date-block{min-width:0}
+.date-block .weekday{font-size:.8rem;letter-spacing:.15em;color:var(--ink-soft)}
+.date-block .date{font-family:var(--serif);font-size:1.5rem;font-weight:600;letter-spacing:.02em;white-space:nowrap}
+.header-actions{display:flex;gap:6px;flex:none}
+.icon-btn{
+  border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);
+  border-radius:10px;padding:7px 11px;font-size:.8rem;cursor:pointer;
+  white-space:nowrap;transition:background .3s,border-color .3s;
+}
+.icon-btn:focus-visible,.btn:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---------- quick add ---------- */
+.add-row{display:flex;gap:8px;margin-bottom:10px}
+.add-row input{
+  flex:1;min-width:0;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  border-radius:var(--radius);padding:13px 15px;font-size:1rem;
+  transition:background .3s,border-color .3s;
+}
+.add-row input::placeholder{color:var(--muted)}
+.btn{
+  border:none;border-radius:var(--radius);padding:13px 18px;font-size:.95rem;
+  cursor:pointer;font-family:var(--sans);font-weight:500;
+  background:var(--accent);color:#fff;transition:opacity .2s,background .3s;
+}
+body.night .btn{color:#1B1608}
+.btn:active{opacity:.8}
+.btn.ghost{background:transparent;color:var(--ink-soft);border:1px solid var(--line)}
+.btn.subtle{background:var(--accent-soft);color:var(--accent)}
+.btn:disabled{opacity:.4;cursor:default}
+
+/* ---------- goal chips ---------- */
+.chips{
+  display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;margin-bottom:14px;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:none;display:flex;align-items:center;gap:6px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);
+  border-radius:99px;padding:6px 12px;font-size:.8rem;cursor:pointer;
+  transition:border-color .2s,background .2s;white-space:nowrap;
+}
+.chip .g-dot{width:9px;height:9px;border-radius:50%;flex:none}
+.chip.active{border-color:var(--ink);color:var(--ink);background:var(--accent-soft)}
+.chips-hint{font-size:.72rem;color:var(--muted);margin:-8px 2px 14px}
+
+/* ---------- lists ---------- */
+.section-label{
+  font-size:.75rem;letter-spacing:.18em;color:var(--muted);
+  margin:20px 2px 8px;display:flex;justify-content:space-between;align-items:center;
+}
+ul.tasks{list-style:none}
+li.task{
+  display:flex;align-items:center;gap:10px;
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);padding:13px 14px;margin-bottom:8px;
+  transition:background .3s,border-color .3s,opacity .3s;
+}
+li.task.done{opacity:.55}
+li.task.done .task-text{text-decoration:line-through;text-decoration-color:var(--muted)}
+.checkbox{
+  width:24px;height:24px;flex:none;border-radius:8px;
+  border:1.5px solid var(--muted);background:transparent;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:transparent;font-size:.9rem;transition:background .2s,border-color .2s;
+}
+.checkbox.checked{background:var(--accent);border-color:var(--accent);color:#fff}
+body.night .checkbox.checked{color:#1B1608}
+.goal-dot{
+  width:16px;height:16px;flex:none;border-radius:50%;cursor:pointer;
+  border:1.5px dashed var(--muted);background:transparent;padding:0;
+  transition:background .2s,border-color .2s;
+}
+.goal-dot.tagged{border-style:solid;border-color:transparent}
+.task-text{flex:1;min-width:0;font-size:.98rem;line-height:1.45;word-break:break-word;overflow-wrap:anywhere}
+.del{
+  border:none;background:none;color:var(--muted);font-size:1.05rem;
+  cursor:pointer;padding:4px 6px;line-height:1;
+}
+.empty-hint{
+  text-align:center;color:var(--muted);font-size:.9rem;
+  padding:34px 10px;line-height:1.8;
+}
+
+/* ---------- footer bar ---------- */
+.footer-bar{
+  position:fixed;left:0;right:0;bottom:0;
+  padding:12px 18px calc(14px + env(safe-area-inset-bottom));
+  display:flex;justify-content:center;
+  background:linear-gradient(to top,var(--bg) 65%,transparent);
+  transition:background .7s ease;
+}
+.footer-bar .btn{width:100%;max-width:524px;padding:15px;font-size:1rem}
+body.reviewing .footer-bar,body.history-open .footer-bar,body.goals-open .footer-bar,body.routines-open .footer-bar{display:none}
+
+/* ---------- review mode ---------- */
+.review{display:none}
+body.reviewing .day-view{display:none}
+body.reviewing .review{display:block}
+.review-head{margin:6px 0 24px}
+.review-step-label{font-size:.75rem;letter-spacing:.22em;color:var(--accent);margin-bottom:8px}
+.review-q{
+  font-family:var(--serif);font-size:1.35rem;font-weight:600;line-height:1.5;
+}
+.review-sub{color:var(--ink-soft);font-size:.9rem;margin-top:10px;line-height:1.7}
+
+.pick-item{
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);padding:13px 14px;margin-bottom:8px;cursor:pointer;
+  transition:border-color .2s,background .2s;
+}
+.pick-item.picked{border-color:var(--accent);background:var(--accent-soft)}
+.pick-mark{
+  width:22px;height:22px;flex:none;border-radius:50%;
+  border:1.5px solid var(--muted);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;color:transparent;
+}
+.pick-item.picked .pick-mark{background:var(--accent);border-color:var(--accent);color:#1B1608}
+body:not(.night) .pick-item.picked .pick-mark{color:#fff}
+
+.carry-item{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;
+}
+.carry-item .task-text{font-size:.95rem;flex:1 1 160px}
+.carry-toggle{display:flex;gap:6px;flex:none;margin-left:auto}
+.carry-toggle button{
+  border:1px solid var(--line);background:transparent;color:var(--muted);
+  border-radius:9px;padding:6px 10px;font-size:.78rem;cursor:pointer;
+}
+.carry-toggle button.on-keep{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.carry-toggle button.on-drop{border-color:var(--danger);color:var(--danger)}
+
+.review-nav{display:flex;gap:10px;margin-top:26px}
+.review-nav .btn{flex:1}
+
+/* summary card */
+.summary-card{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:18px;padding:22px 20px;margin-top:4px;
+}
+.summary-card h3{
+  font-family:var(--serif);font-size:1.05rem;font-weight:600;
+  color:var(--accent);letter-spacing:.05em;margin-bottom:14px;
+}
+.summary-card ol{padding-left:1.3em;margin-bottom:14px}
+.summary-card ol li{margin-bottom:8px;line-height:1.6;font-size:.98rem}
+.summary-card .carry-list{color:var(--ink-soft);font-size:.88rem;line-height:1.8}
+.summary-meta{color:var(--muted);font-size:.8rem;margin-bottom:14px}
+
+/* ---------- history / goals / routines panels ---------- */
+.history,.goals,.routines{display:none}
+body.history-open .day-view{display:none}
+body.history-open .history{display:block}
+body.goals-open .day-view{display:none}
+body.goals-open .goals{display:block}
+body.routines-open .day-view{display:none}
+body.routines-open .routines{display:block}
+.routine-card{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);padding:14px;margin-bottom:10px;
+}
+.routine-card .r-head{display:flex;align-items:center;gap:10px}
+.routine-card .r-head .task-text{font-weight:500}
+.rt-days{display:flex;gap:6px;margin-top:10px}
+.rt-day{
+  width:32px;height:32px;border-radius:50%;flex:none;
+  border:1px solid var(--line);background:transparent;color:var(--muted);
+  font-size:.78rem;cursor:pointer;transition:background .2s,border-color .2s;
+}
+.rt-day.on{background:var(--accent);border-color:var(--accent);color:#fff}
+body.night .rt-day.on{color:#1B1608}
+.history-entry{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);padding:16px;margin-bottom:10px;
+}
+.history-entry .h-date{font-family:var(--serif);font-weight:600;margin-bottom:8px;font-size:.95rem}
+.history-entry ol{padding-left:1.3em;font-size:.9rem;line-height:1.7;color:var(--ink-soft)}
+
+.goal-card{
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--radius);padding:16px;margin-bottom:10px;
+}
+.goal-card .g-head{display:flex;align-items:center;gap:9px;margin-bottom:4px}
+.goal-card .g-dot{width:11px;height:11px;border-radius:50%;flex:none}
+.goal-card .g-title{font-weight:600;font-size:.98rem;flex:1;min-width:0;word-break:break-word}
+.goal-card .g-count{font-size:.78rem;color:var(--muted);flex:none}
+.goal-card ul{list-style:none;margin-top:10px}
+.goal-card ul li{
+  font-size:.88rem;color:var(--ink-soft);line-height:1.6;
+  padding:5px 0;border-top:1px dashed var(--line);
+}
+.goal-card .g-empty{font-size:.85rem;color:var(--muted);margin-top:8px}
+.goal-manage{margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
+.goal-row{display:flex;align-items:center;gap:9px;padding:9px 2px}
+.goal-row .g-dot{width:11px;height:11px;border-radius:50%;flex:none}
+.goal-row span{flex:1;font-size:.92rem}
+.month-actions{display:flex;gap:10px;margin-top:18px}
+.month-actions .btn{flex:1}
+
+.toast{
+  position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(8px);
+  background:var(--ink);color:var(--bg);padding:9px 18px;border-radius:99px;
+  font-size:.85rem;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;
+  z-index:50;white-space:nowrap;max-width:88vw;overflow:hidden;text-overflow:ellipsis;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ---------- 窄螢幕（手機） ---------- */
+@media (max-width:430px){
+  .app{padding:16px 13px 116px;padding:calc(16px + env(safe-area-inset-top, 0px)) 13px 116px}
+  .date-block .weekday{font-size:.72rem}
+  .date-block .date{font-size:1.25rem}
+  .icon-btn{padding:6px 9px;font-size:.75rem;border-radius:9px}
+  .add-row{gap:6px}
+  .add-row input{padding:12px 13px}
+  .btn{padding:12px 14px;font-size:.9rem}
+  .review-q{font-size:1.2rem}
+  li.task{padding:12px 12px;gap:9px}
+  .rt-days{gap:5px}
+  .rt-day{width:30px;height:30px;font-size:.72rem}
+  .chip{padding:6px 10px;font-size:.76rem}
+  .summary-card{padding:18px 16px}
+  .goal-card,.routine-card,.history-entry{padding:14px 13px}
+  .month-actions .btn{padding:12px 10px;font-size:.85rem}
+}
+@media (max-width:350px){
+  .header-actions{width:100%;justify-content:flex-start}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ 日間模式 ============ -->
+  <div class="day-view">
+    <header>
+      <div class="date-block">
+        <div class="weekday" id="weekday"></div>
+        <div class="date" id="dateText"></div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="routinesBtn">例行</button>
+        <button class="icon-btn" id="goalsBtn">目標</button>
+        <button class="icon-btn" id="historyBtn">紀錄</button>
+      </div>
+    </header>
+
+    <div class="add-row">
+      <input type="text" id="addInput" placeholder="今天要做什麼？" enterkeyhint="done" autocomplete="off">
+      <button class="btn" id="addBtn">加入</button>
+    </div>
+    <div class="chips" id="goalChips" style="display:none"></div>
+    <div class="chips-hint" id="chipsHint" style="display:none">選一個目標後新增，任務會自動歸屬；任務上的圓點可點擊切換。</div>
+
+    <div id="activeSection">
+      <ul class="tasks" id="activeList"></ul>
+      <div class="empty-hint" id="emptyHint" style="display:none">
+        清單是空的。<br>白天所有待辦都丟進來，晚上再篩選。
+      </div>
+    </div>
+
+    <div id="doneSection" style="display:none">
+      <div class="section-label"><span>已完成</span><span id="doneCount"></span></div>
+      <ul class="tasks" id="doneList"></ul>
+    </div>
+  </div>
+
+  <!-- ============ 晚間回顧 ============ -->
+  <div class="review">
+    <!-- 步驟 1：回顧 -->
+    <div class="review-step" id="step1">
+      <div class="review-head">
+        <div class="review-step-label">晚間回顧 · 一之三</div>
+        <div class="review-q" id="recapTitle"></div>
+        <div class="review-sub">先看一遍就好，不用做任何事。</div>
+      </div>
+      <ul class="tasks" id="recapList"></ul>
+      <div class="review-nav">
+        <button class="btn ghost" onclick="exitReview()">先不回顧</button>
+        <button class="btn" onclick="gotoStep(2)">下一步</button>
+      </div>
+    </div>
+
+    <!-- 步驟 2：篩選 -->
+    <div class="review-step" id="step2" style="display:none">
+      <div class="review-head">
+        <div class="review-step-label">晚間回顧 · 二之三</div>
+        <div class="review-q">明天的我，需要知道今天的哪三件事？</div>
+        <div class="review-sub">從完成的事情裡挑，或自己寫。最多三件——這是在篩選，不是蒐集。</div>
+      </div>
+      <div id="pickList"></div>
+      <div class="add-row" style="margin-top:14px">
+        <input type="text" id="freePickInput" placeholder="清單以外的事，也可以寫在這" autocomplete="off">
+        <button class="btn subtle" id="freePickBtn">留下</button>
+      </div>
+      <div class="review-nav">
+        <button class="btn ghost" onclick="gotoStep(1)">上一步</button>
+        <button class="btn" id="step2Next" onclick="gotoStep(3)">下一步</button>
+      </div>
+    </div>
+
+    <!-- 步驟 3：延續 -->
+    <div class="review-step" id="step3" style="display:none">
+      <div class="review-head">
+        <div class="review-step-label">晚間回顧 · 三之三</div>
+        <div class="review-q">沒做完的，要延續還是放掉？</div>
+        <div class="review-sub">放掉不是失敗，是替明天清出空間。</div>
+      </div>
+      <div id="carryList"></div>
+      <div class="empty-hint" id="noCarryHint" style="display:none">今天的清單全部完成了。</div>
+      <div class="review-nav">
+        <button class="btn ghost" onclick="gotoStep(2)">上一步</button>
+        <button class="btn" onclick="gotoStep(4)">產生摘要</button>
+      </div>
+    </div>
+
+    <!-- 步驟 4：摘要 -->
+    <div class="review-step" id="step4" style="display:none">
+      <div class="review-head">
+        <div class="review-step-label">今日結算</div>
+        <div class="review-q">留給明天的我</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-meta" id="summaryMeta"></div>
+        <h3>今日三件事</h3>
+        <ol id="summaryThree"></ol>
+        <div class="carry-list" id="summaryCarry"></div>
+      </div>
+      <div class="review-nav">
+        <button class="btn ghost" onclick="gotoStep(3)">上一步</button>
+        <button class="btn subtle" onclick="copySummary()">複製到日記</button>
+      </div>
+      <div class="review-nav" style="margin-top:10px">
+        <button class="btn" style="flex:1" onclick="finishReview()">完成回顧，清空今日</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 回顧紀錄 ============ -->
+  <div class="history">
+    <header>
+      <div class="date-block">
+        <div class="weekday">ARCHIVE</div>
+        <div class="date">回顧紀錄</div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="closePanels()">返回</button>
+      </div>
+    </header>
+    <div id="historyList"></div>
+    <div class="empty-hint" id="historyEmpty" style="display:none">
+      還沒有任何回顧紀錄。<br>今晚完成第一次回顧後，會出現在這裡。
+    </div>
+  </div>
+
+  <!-- ============ 月目標 ============ -->
+  <div class="goals">
+    <header>
+      <div class="date-block">
+        <div class="weekday">MONTHLY</div>
+        <div class="date" id="goalsTitle"></div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="closePanels()">返回</button>
+      </div>
+    </header>
+
+    <div id="goalCards"></div>
+    <div class="empty-hint" id="goalsEmpty" style="display:none">
+      這個月還沒有登錄目標。<br>在紙本完成月度思考後，把各領域目標登錄在這裡，<br>日常任務就能掛在目標底下累積。
+    </div>
+
+    <div class="month-actions" id="copyLastRow" style="display:none">
+      <button class="btn ghost" onclick="copyLastMonthGoals()">沿用上個月的目標</button>
+    </div>
+    <div class="month-actions">
+      <button class="btn subtle" style="flex:1" onclick="copyMonthSummary()">複製本月總結（對照紙本用）</button>
+    </div>
+
+    <div class="goal-manage">
+      <div class="section-label"><span>管理本月目標</span></div>
+      <div id="goalManageList"></div>
+      <div class="add-row" style="margin-top:10px">
+        <input type="text" id="goalInput" placeholder="新增目標，例：完成 IRB 修訂送件" autocomplete="off">
+        <button class="btn" id="goalAddBtn">登錄</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 例行任務 ============ -->
+  <div class="routines">
+    <header>
+      <div class="date-block">
+        <div class="weekday">WEEKLY</div>
+        <div class="date">例行任務</div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="closePanels()">返回</button>
+      </div>
+    </header>
+
+    <div id="routineList"></div>
+    <div class="empty-hint" id="routinesEmpty" style="display:none">
+      還沒有例行任務。<br>把每週固定的事登錄在這裡（重訓、練球、日記……），<br>它們會在指定的日子自動出現在清單上。
+    </div>
+
+    <div class="add-row" style="margin-top:18px">
+      <input type="text" id="routineInput" placeholder="新增例行任務，例：Day A 爆發力訓練" autocomplete="off">
+      <button class="btn" id="routineAddBtn">新增</button>
+    </div>
+    <div class="chips-hint" style="display:block;margin-top:2px">新增後點選星期幾；圓點可掛月目標。</div>
+  </div>
+
+</div>
+
+<div class="footer-bar day-view">
+  <button class="btn" id="reviewBtn">🌙 開始晚間回顧</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= 資料層 ================= */
+const K_ITEMS = 'dcl_items';
+const K_ARCHIVE = 'dcl_archive';
+const K_GOALS = 'dcl_goals';
+const K_ROUTINES = 'dcl_routines';
+const K_SEED = 'dcl_lastseed';
+
+let items = load(K_ITEMS, []);        // {id, text, done, createdAt, doneAt, goalId}
+let archive = load(K_ARCHIVE, []);    // {date, dateLabel, three, completedCount, carried, completedItems:[{text,goalId}]}
+let goalsBy = load(K_GOALS, {});      // { '2026-07': [{id, text, color}] }
+let routines = load(K_ROUTINES, []);  // {id, text, days:[0-6], goalId}
+let picked = [];
+let carryDecisions = {};
+let activeGoalId = null;              // 新增任務時的預設歸屬
+
+const GOAL_COLORS = ['#2E6B4E','#B4543E','#3E5FA8','#8A5FA8','#C08A2E','#4E8A8A','#A84E6B'];
+
+function load(k, fb){ try{ return JSON.parse(localStorage.getItem(k)) ?? fb }catch(e){ return fb } }
+function save(){ localStorage.setItem(K_ITEMS, JSON.stringify(items)) }
+function saveArchive(){ localStorage.setItem(K_ARCHIVE, JSON.stringify(archive)) }
+function saveGoals(){ localStorage.setItem(K_GOALS, JSON.stringify(goalsBy)) }
+function saveRoutines(){ localStorage.setItem(K_ROUTINES, JSON.stringify(routines)) }
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6) }
+
+/* ================= 日期 ================= */
+const WEEK = ['日','一','二','三','四','五','六'];
+function todayLabel(){
+  const d = new Date();
+  return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}（${WEEK[d.getDay()]}）`;
+}
+function monthKey(d = new Date()){
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+function prevMonthKey(){
+  const d = new Date(); d.setDate(1); d.setMonth(d.getMonth()-1);
+  return monthKey(d);
+}
+function localDateStr(){
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+/* ================= 例行任務播種 ================= */
+function spawnRoutineItem(r){
+  if(items.some(i => !i.done && i.text === r.text)) return false;
+  items.push({ id: uid(), text: r.text, done:false, createdAt: Date.now(), doneAt:null, goalId: r.goalId ?? null, routine:true });
+  return true;
+}
+function seedToday(){
+  const t = localDateStr();
+  if(localStorage.getItem(K_SEED) === t) return;
+  const wd = new Date().getDay();
+  let added = 0;
+  routines.filter(r => Array.isArray(r.days) && r.days.includes(wd))
+          .forEach(r => { if(spawnRoutineItem(r)) added++; });
+  localStorage.setItem(K_SEED, t);
+  if(added) save();
+}
+function renderHeader(){
+  const d = new Date();
+  document.getElementById('weekday').textContent = `星期${WEEK[d.getDay()]}`;
+  document.getElementById('dateText').textContent = `${d.getMonth()+1} 月 ${d.getDate()} 日`;
+}
+
+/* ================= 月目標 ================= */
+function currentGoals(){ return goalsBy[monthKey()] || [] }
+function goalById(id){ return currentGoals().find(g => g.id === id) || null }
+function goalColor(id){
+  const g = goalById(id);
+  return g ? g.color : null;
+}
+
+function renderChips(){
+  const goals = currentGoals();
+  const box = document.getElementById('goalChips');
+  const hint = document.getElementById('chipsHint');
+  if(!goals.length){
+    box.style.display = 'none'; hint.style.display = 'none';
+    activeGoalId = null;
+    return;
+  }
+  box.style.display = 'flex';
+  hint.style.display = 'block';
+  box.innerHTML = '';
+  const noneChip = document.createElement('button');
+  noneChip.className = 'chip' + (activeGoalId === null ? ' active' : '');
+  noneChip.textContent = '一般';
+  noneChip.onclick = () => { activeGoalId = null; renderChips(); };
+  box.appendChild(noneChip);
+  goals.forEach(g => {
+    const c = document.createElement('button');
+    c.className = 'chip' + (activeGoalId === g.id ? ' active' : '');
+    c.innerHTML = `<span class="g-dot" style="background:${g.color}"></span>`;
+    const s = document.createElement('span'); s.textContent = g.text;
+    c.appendChild(s);
+    c.onclick = () => { activeGoalId = (activeGoalId === g.id ? null : g.id); renderChips(); };
+    box.appendChild(c);
+  });
+}
+
+function cycleGoal(item){
+  const goals = currentGoals();
+  if(!goals.length) return;
+  const ids = [null, ...goals.map(g => g.id)];
+  const cur = ids.indexOf(item.goalId ?? null);
+  item.goalId = ids[(cur + 1) % ids.length];
+  save(); renderTasks();
+  const g = goalById(item.goalId);
+  toast(g ? `歸屬：${g.text}` : '取消歸屬');
+}
+
+/* ================= 日間清單 ================= */
+const activeList = document.getElementById('activeList');
+const doneList = document.getElementById('doneList');
+
+function renderTasks(){
+  const active = items.filter(i => !i.done);
+  const done = items.filter(i => i.done);
+
+  activeList.innerHTML = '';
+  active.forEach(i => activeList.appendChild(taskEl(i)));
+  document.getElementById('emptyHint').style.display = items.length ? 'none' : 'block';
+
+  doneList.innerHTML = '';
+  done.forEach(i => doneList.appendChild(taskEl(i)));
+  document.getElementById('doneSection').style.display = done.length ? 'block' : 'none';
+  document.getElementById('doneCount').textContent = `${done.length} 件`;
+
+  document.getElementById('reviewBtn').disabled = items.length === 0;
+}
+
+function taskEl(item){
+  const li = document.createElement('li');
+  li.className = 'task' + (item.done ? ' done' : '');
+
+  const cb = document.createElement('button');
+  cb.className = 'checkbox' + (item.done ? ' checked' : '');
+  cb.setAttribute('aria-label', item.done ? '標記為未完成' : '標記為完成');
+  cb.textContent = '✓';
+  cb.onclick = () => {
+    item.done = !item.done;
+    item.doneAt = item.done ? Date.now() : null;
+    save(); renderTasks();
+  };
+
+  const span = document.createElement('span');
+  span.className = 'task-text';
+  span.textContent = item.text;
+
+  const del = document.createElement('button');
+  del.className = 'del';
+  del.setAttribute('aria-label','刪除');
+  del.textContent = '×';
+  del.onclick = () => { items = items.filter(x => x.id !== item.id); save(); renderTasks(); };
+
+  li.appendChild(cb);
+  if(currentGoals().length){
+    const dot = document.createElement('button');
+    const color = goalColor(item.goalId);
+    dot.className = 'goal-dot' + (color ? ' tagged' : '');
+    if(color) dot.style.background = color;
+    dot.setAttribute('aria-label','切換目標歸屬');
+    dot.onclick = () => cycleGoal(item);
+    li.appendChild(dot);
+  }
+  li.append(span, del);
+  return li;
+}
+
+function addItem(){
+  const input = document.getElementById('addInput');
+  const text = input.value.trim();
+  if(!text) return;
+  items.unshift({ id: uid(), text, done:false, createdAt: Date.now(), doneAt:null, goalId: activeGoalId });
+  input.value = '';
+  save(); renderTasks();
+  input.focus();
+}
+document.getElementById('addBtn').onclick = addItem;
+document.getElementById('addInput').addEventListener('keydown', e => { if(e.key==='Enter') addItem() });
+
+/* ================= 晚間回顧 ================= */
+document.getElementById('reviewBtn').onclick = startReview;
+
+function startReview(){
+  picked = [];
+  carryDecisions = {};
+  items.filter(i=>!i.done).forEach(i => carryDecisions[i.id] = 'keep');
+  document.body.classList.add('night','reviewing');
+  gotoStep(1);
+  window.scrollTo(0,0);
+}
+function exitReview(){
+  document.body.classList.remove('night','reviewing');
+  renderTasks();
+}
+function gotoStep(n){
+  [1,2,3,4].forEach(i => document.getElementById('step'+i).style.display = i===n ? 'block' : 'none');
+  if(n===1) renderRecap();
+  if(n===2) renderPick();
+  if(n===3) renderCarry();
+  if(n===4) renderSummary();
+  window.scrollTo(0,0);
+}
+
+/* --- 步驟 1 --- */
+function renderRecap(){
+  const done = items.filter(i=>i.done);
+  document.getElementById('recapTitle').textContent =
+    done.length ? `今天完成了 ${done.length} 件事。` : '今天的清單還沒有完成的項目。';
+  const ul = document.getElementById('recapList');
+  ul.innerHTML = '';
+  done.forEach(i => {
+    const li = document.createElement('li');
+    li.className = 'task';
+    li.innerHTML = `<span class="checkbox checked">✓</span>`;
+    const color = goalColor(i.goalId);
+    if(color){
+      const dot = document.createElement('span');
+      dot.className = 'goal-dot tagged';
+      dot.style.background = color;
+      dot.style.cursor = 'default';
+      li.appendChild(dot);
+    }
+    const span = document.createElement('span');
+    span.className='task-text'; span.textContent = i.text;
+    li.appendChild(span);
+    ul.appendChild(li);
+  });
+}
+
+/* --- 步驟 2 --- */
+function renderPick(){
+  const box = document.getElementById('pickList');
+  box.innerHTML = '';
+  const candidates = [...new Set([ ...items.filter(i=>i.done).map(i=>i.text), ...picked ])];
+  candidates.forEach(text => {
+    const div = document.createElement('div');
+    div.className = 'pick-item' + (picked.includes(text) ? ' picked' : '');
+    div.setAttribute('role','button');
+    div.innerHTML = `<span class="pick-mark">✓</span>`;
+    const span = document.createElement('span');
+    span.className='task-text'; span.textContent = text;
+    div.appendChild(span);
+    div.onclick = () => togglePick(text);
+    box.appendChild(div);
+  });
+  updateStep2Btn();
+}
+function togglePick(text){
+  if(picked.includes(text)){
+    picked = picked.filter(t => t !== text);
+  }else{
+    if(picked.length >= 3){ toast('最多留下三件事——這是篩選'); return; }
+    picked.push(text);
+  }
+  renderPick();
+}
+document.getElementById('freePickBtn').onclick = () => {
+  const input = document.getElementById('freePickInput');
+  const text = input.value.trim();
+  if(!text) return;
+  if(picked.length >= 3){ toast('最多留下三件事——這是篩選'); return; }
+  if(!picked.includes(text)) picked.push(text);
+  input.value = '';
+  renderPick();
+};
+function updateStep2Btn(){
+  const btn = document.getElementById('step2Next');
+  btn.textContent = picked.length ? `下一步（已選 ${picked.length}）` : '下一步（可略過）';
+}
+
+/* --- 步驟 3 --- */
+function renderCarry(){
+  const box = document.getElementById('carryList');
+  box.innerHTML = '';
+  const undone = items.filter(i=>!i.done);
+  document.getElementById('noCarryHint').style.display = undone.length ? 'none' : 'block';
+  undone.forEach(i => {
+    const div = document.createElement('div');
+    div.className = 'carry-item';
+    const span = document.createElement('span');
+    span.className='task-text'; span.textContent = i.text;
+    const tog = document.createElement('div');
+    tog.className='carry-toggle';
+    const keep = document.createElement('button');
+    keep.textContent = '延到明天';
+    const drop = document.createElement('button');
+    drop.textContent = '放掉';
+    const paint = () => {
+      keep.className = carryDecisions[i.id]==='keep' ? 'on-keep' : '';
+      drop.className = carryDecisions[i.id]==='drop' ? 'on-drop' : '';
+    };
+    keep.onclick = () => { carryDecisions[i.id]='keep'; paint(); };
+    drop.onclick = () => { carryDecisions[i.id]='drop'; paint(); };
+    paint();
+    tog.append(keep, drop);
+    div.append(span, tog);
+    box.appendChild(div);
+  });
+}
+
+/* --- 步驟 4 --- */
+function renderSummary(){
+  document.getElementById('summaryMeta').textContent =
+    `${todayLabel()} · 完成 ${items.filter(i=>i.done).length} 件`;
+  const ol = document.getElementById('summaryThree');
+  ol.innerHTML = '';
+  if(picked.length){
+    picked.forEach(t => {
+      const li = document.createElement('li'); li.textContent = t; ol.appendChild(li);
+    });
+  }else{
+    const li = document.createElement('li');
+    li.textContent = '（今天沒有特別留下的事，也是一種紀錄）';
+    li.style.color = 'var(--muted)';
+    ol.appendChild(li);
+  }
+  const carried = items.filter(i=>!i.done && carryDecisions[i.id]==='keep');
+  document.getElementById('summaryCarry').textContent =
+    carried.length ? '延續到明天：' + carried.map(i=>i.text).join('、') : '';
+}
+
+function summaryText(){
+  const done = items.filter(i=>i.done).length;
+  const carried = items.filter(i=>!i.done && carryDecisions[i.id]==='keep');
+  let t = `${todayLabel()} 晚間回顧\n今天完成 ${done} 件事\n\n留給明天的我：\n`;
+  if(picked.length){
+    picked.forEach((p,idx) => t += `${idx+1}. ${p}\n`);
+  }else{
+    t += '（無）\n';
+  }
+  if(carried.length){
+    t += `\n延續到明天：\n`;
+    carried.forEach(c => t += `- ${c.text}\n`);
+  }
+  return t.trim();
+}
+
+async function copyText(text, okMsg){
+  try{
+    await navigator.clipboard.writeText(text);
+    toast(okMsg);
+  }catch(e){
+    toast('複製失敗，請手動選取');
+  }
+}
+function copySummary(){ copyText(summaryText(), '已複製，可貼到日記') }
+
+function finishReview(){
+  const d = new Date();
+  archive.unshift({
+    date: d.toISOString().slice(0,10),
+    dateLabel: todayLabel(),
+    three: [...picked],
+    completedCount: items.filter(i=>i.done).length,
+    carried: items.filter(i=>!i.done && carryDecisions[i.id]==='keep').map(i=>i.text),
+    completedItems: items.filter(i=>i.done).map(i=>({ text:i.text, goalId:i.goalId ?? null }))
+  });
+  saveArchive();
+  items = items.filter(i => !i.done && carryDecisions[i.id]==='keep');
+  save();
+  exitReview();
+  toast('今日已結算，晚安');
+}
+
+/* ================= 回顧紀錄 ================= */
+document.getElementById('historyBtn').onclick = () => {
+  renderHistory();
+  document.body.classList.add('history-open');
+  window.scrollTo(0,0);
+};
+function closePanels(){
+  document.body.classList.remove('history-open','goals-open','routines-open');
+  renderChips(); renderTasks();
+}
+function renderHistory(){
+  const box = document.getElementById('historyList');
+  box.innerHTML = '';
+  document.getElementById('historyEmpty').style.display = archive.length ? 'none' : 'block';
+  archive.forEach(e => {
+    const div = document.createElement('div');
+    div.className = 'history-entry';
+    const h = document.createElement('div');
+    h.className='h-date';
+    h.textContent = `${e.dateLabel} · 完成 ${e.completedCount} 件`;
+    div.appendChild(h);
+    const ol = document.createElement('ol');
+    (e.three.length ? e.three : ['（未留下）']).forEach(t => {
+      const li = document.createElement('li'); li.textContent = t; ol.appendChild(li);
+    });
+    div.appendChild(ol);
+    box.appendChild(div);
+  });
+}
+
+/* ================= 月目標頁 ================= */
+document.getElementById('goalsBtn').onclick = () => {
+  renderGoalsPanel();
+  document.body.classList.add('goals-open');
+  window.scrollTo(0,0);
+};
+
+/* 這個月每個目標底下完成了什麼：封存 + 今日尚未結算的完成項 */
+function monthCompletions(){
+  const mk = monthKey();
+  const fromArchive = archive
+    .filter(e => e.date && e.date.slice(0,7) === mk && Array.isArray(e.completedItems))
+    .flatMap(e => e.completedItems.map(ci => ({ ...ci, dateLabel: e.dateLabel })));
+  const fromToday = items
+    .filter(i => i.done)
+    .map(i => ({ text:i.text, goalId:i.goalId ?? null, dateLabel:'今天' }));
+  return [...fromArchive, ...fromToday];
+}
+
+function renderGoalsPanel(){
+  const d = new Date();
+  document.getElementById('goalsTitle').textContent = `${d.getMonth()+1} 月目標`;
+  const goals = currentGoals();
+  const comps = monthCompletions();
+
+  const cards = document.getElementById('goalCards');
+  cards.innerHTML = '';
+  document.getElementById('goalsEmpty').style.display = goals.length ? 'none' : 'block';
+
+  goals.forEach(g => {
+    const mine = comps.filter(c => c.goalId === g.id);
+    const card = document.createElement('div');
+    card.className = 'goal-card';
+    const head = document.createElement('div');
+    head.className = 'g-head';
+    head.innerHTML = `<span class="g-dot" style="background:${g.color}"></span>`;
+    const title = document.createElement('span');
+    title.className='g-title'; title.textContent = g.text;
+    const count = document.createElement('span');
+    count.className='g-count'; count.textContent = `本月完成 ${mine.length} 件`;
+    head.append(title, count);
+    card.appendChild(head);
+    if(mine.length){
+      const ul = document.createElement('ul');
+      mine.forEach(c => {
+        const li = document.createElement('li');
+        li.textContent = `${c.text}（${c.dateLabel}）`;
+        ul.appendChild(li);
+      });
+      card.appendChild(ul);
+    }else{
+      const p = document.createElement('div');
+      p.className='g-empty';
+      p.textContent = '還沒有完成掛在這個目標下的任務。';
+      card.appendChild(p);
+    }
+    cards.appendChild(card);
+  });
+
+  /* 未歸類 */
+  const untagged = comps.filter(c => !c.goalId || !goalById(c.goalId));
+  if(goals.length && untagged.length){
+    const card = document.createElement('div');
+    card.className = 'goal-card';
+    card.innerHTML = `<div class="g-head"><span class="g-dot" style="background:var(--muted)"></span><span class="g-title">未歸類</span><span class="g-count">本月完成 ${untagged.length} 件</span></div>`;
+    cards.appendChild(card);
+  }
+
+  /* 沿用上月按鈕 */
+  const lastGoals = goalsBy[prevMonthKey()] || [];
+  document.getElementById('copyLastRow').style.display =
+    (!goals.length && lastGoals.length) ? 'flex' : 'none';
+
+  /* 管理列表 */
+  const manage = document.getElementById('goalManageList');
+  manage.innerHTML = '';
+  goals.forEach(g => {
+    const row = document.createElement('div');
+    row.className = 'goal-row';
+    row.innerHTML = `<span class="g-dot" style="background:${g.color}"></span>`;
+    const s = document.createElement('span'); s.textContent = g.text;
+    const del = document.createElement('button');
+    del.className='del'; del.textContent='×';
+    del.setAttribute('aria-label','刪除目標');
+    del.onclick = () => {
+      if(!confirm(`刪除目標「${g.text}」？已掛在底下的任務會變成未歸類。`)) return;
+      goalsBy[monthKey()] = currentGoals().filter(x => x.id !== g.id);
+      saveGoals(); renderGoalsPanel();
+    };
+    row.append(s, del);
+    manage.appendChild(row);
+  });
+}
+
+function addGoal(){
+  const input = document.getElementById('goalInput');
+  const text = input.value.trim();
+  if(!text) return;
+  const mk = monthKey();
+  if(!goalsBy[mk]) goalsBy[mk] = [];
+  if(goalsBy[mk].length >= 7){ toast('目標太多就不是目標了，最多七個'); return; }
+  goalsBy[mk].push({ id: uid(), text, color: GOAL_COLORS[goalsBy[mk].length % GOAL_COLORS.length] });
+  input.value = '';
+  saveGoals(); renderGoalsPanel();
+}
+document.getElementById('goalAddBtn').onclick = addGoal;
+document.getElementById('goalInput').addEventListener('keydown', e => { if(e.key==='Enter') addGoal() });
+
+function copyLastMonthGoals(){
+  const last = goalsBy[prevMonthKey()] || [];
+  if(!last.length) return;
+  goalsBy[monthKey()] = last.map(g => ({ ...g, id: uid() }));
+  saveGoals(); renderGoalsPanel();
+  toast('已沿用上月目標');
+}
+
+function copyMonthSummary(){
+  const d = new Date();
+  const goals = currentGoals();
+  const comps = monthCompletions();
+  let t = `${d.getFullYear()}/${d.getMonth()+1} 月目標回顧\n`;
+  if(!goals.length){
+    t += '（本月未登錄目標）\n';
+  }
+  goals.forEach(g => {
+    const mine = comps.filter(c => c.goalId === g.id);
+    t += `\n■ ${g.text}（完成 ${mine.length} 件）\n`;
+    mine.forEach(c => t += `- ${c.text}（${c.dateLabel}）\n`);
+    if(!mine.length) t += '（無）\n';
+  });
+  const untagged = comps.filter(c => !c.goalId || !goalById(c.goalId));
+  if(untagged.length) t += `\n未歸類完成：${untagged.length} 件\n`;
+  copyText(t.trim(), '已複製本月總結');
+}
+
+/* ================= 例行任務頁 ================= */
+document.getElementById('routinesBtn').onclick = () => {
+  renderRoutinesPanel();
+  document.body.classList.add('routines-open');
+  window.scrollTo(0,0);
+};
+
+function renderRoutinesPanel(){
+  const box = document.getElementById('routineList');
+  box.innerHTML = '';
+  document.getElementById('routinesEmpty').style.display = routines.length ? 'none' : 'block';
+  routines.forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'routine-card';
+
+    const head = document.createElement('div');
+    head.className = 'r-head';
+    const dot = document.createElement('button');
+    const color = goalColor(r.goalId);
+    dot.className = 'goal-dot' + (color ? ' tagged' : '');
+    if(color) dot.style.background = color;
+    dot.setAttribute('aria-label','切換目標歸屬');
+    dot.onclick = () => {
+      const goals = currentGoals();
+      if(!goals.length){ toast('本月還沒有登錄目標'); return; }
+      const ids = [null, ...goals.map(g => g.id)];
+      const cur = ids.indexOf(r.goalId ?? null);
+      r.goalId = ids[(cur + 1) % ids.length];
+      saveRoutines(); renderRoutinesPanel();
+      const g = goalById(r.goalId);
+      toast(g ? `歸屬：${g.text}` : '取消歸屬');
+    };
+    const span = document.createElement('span');
+    span.className = 'task-text'; span.textContent = r.text;
+    const del = document.createElement('button');
+    del.className = 'del'; del.textContent = '×';
+    del.setAttribute('aria-label','刪除例行任務');
+    del.onclick = () => {
+      if(!confirm(`刪除例行任務「${r.text}」？`)) return;
+      routines = routines.filter(x => x.id !== r.id);
+      saveRoutines(); renderRoutinesPanel();
+    };
+    head.append(dot, span, del);
+    card.appendChild(head);
+
+    const daysRow = document.createElement('div');
+    daysRow.className = 'rt-days';
+    WEEK.forEach((label, wd) => {
+      const b = document.createElement('button');
+      b.className = 'rt-day' + (r.days.includes(wd) ? ' on' : '');
+      b.textContent = label;
+      b.onclick = () => {
+        if(r.days.includes(wd)){
+          r.days = r.days.filter(x => x !== wd);
+        }else{
+          r.days.push(wd);
+          // 若今天就是這一天，立即長出任務
+          if(wd === new Date().getDay() && spawnRoutineItem(r)){
+            save(); toast('已加入今天的清單');
+          }
+        }
+        saveRoutines(); renderRoutinesPanel();
+      };
+      daysRow.appendChild(b);
+    });
+    card.appendChild(daysRow);
+    box.appendChild(card);
+  });
+}
+
+function addRoutine(){
+  const input = document.getElementById('routineInput');
+  const text = input.value.trim();
+  if(!text) return;
+  routines.push({ id: uid(), text, days: [], goalId: null });
+  input.value = '';
+  saveRoutines(); renderRoutinesPanel();
+}
+document.getElementById('routineAddBtn').onclick = addRoutine;
+document.getElementById('routineInput').addEventListener('keydown', e => { if(e.key==='Enter') addRoutine() });
+
+/* ================= 雜項 ================= */
+let toastTimer;
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> el.classList.remove('show'), 2200);
+}
+
+renderHeader();
+seedToday();
+renderChips();
+renderTasks();
+</script>
+</body>
+</html>
